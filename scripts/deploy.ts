@@ -1,23 +1,31 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
+const { REPUBLIC_NFT_CONTRACT_ADDRESS } = require("../constants")
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const FakeNFTMarketplace = await ethers.getContractFactory(
+      "FakeNFTMarketplace"
+  );
+  const fakeNftMarketplace = await FakeNFTMarketplace.deploy();
+  await fakeNftMarketplace.deployed();
 
-  const lockedAmount = ethers.utils.parseEther("1");
+  console.log("FakeNFTMarketplace deployed to: ", fakeNftMarketplace.address);
 
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const RepublicDevsDAO = await ethers.getContractFactory("CryptoDevsDAO");
+  const republicDevsDAO = await RepublicDevsDAO.deploy(
+      fakeNftMarketplace.address,
+      REPUBLIC_NFT_CONTRACT_ADDRESS,
+      {
+        value: ethers.utils.parseEther("0.0001")
+      }
+  );
+  await republicDevsDAO.deployed();
 
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log("RepublicDevsDAO deployed to: ", republicDevsDAO.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+main()
+.then(()=>process.exit(0))
+.catch((error)=>{
+  console.error(error)
+  process.exit(1);
 });

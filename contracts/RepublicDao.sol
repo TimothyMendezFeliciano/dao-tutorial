@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 interface IFakeNFTMarketplace {
-    function getPrice() external viuew returns (uint256);
+    function getPrice() external view returns (uint256);
 
     function available(uint256 _tokenId) external view returns (bool);
 
@@ -38,7 +38,7 @@ contract RepublicDao is Ownable {
     uint256 numberProposals;
 
     IFakeNFTMarketplace nftMarketplace;
-    IRepublicDevsNFT cryptoDevsNFT;
+    IRepublicDevsNFT republicDevsNFT;
 
     modifier nftHolderOnly() {
         require(republicDevsNFT.balanceOf(msg.sender) > 0, "NOT_A_DAO_MEMBER");
